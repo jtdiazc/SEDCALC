@@ -726,6 +726,10 @@ for sensitivity in SEDCALC_scenarios:
             print(sensitivity+" SLR: "+scenario+ " year: "+str(year)+" accretion: "+str(round(yearly_acc_rate,1))+" cm")
             #Let's calculate elevation at the beginning of year
             elevations_1=np.minimum(elevations_0+yearly_acc_rate,MTL_dum+MTL_cutoff)
+
+            #Let's calculate cummulative accretion
+            cum_ac=np.maximum(elevations_1-LiDAR_2017,0)
+
             MWL=MWL*(elevations_1<MTL_dum+MTL_cutoff).astype(int)
             #Let's add 1 to the cells which haven't reached MTL + MTL_cutoff elevation yet
             years_0=years_0+MWL*(elevations_1<MTL_dum+MTL_cutoff).astype(int)
@@ -733,9 +737,11 @@ for sensitivity in SEDCALC_scenarios:
                                  "_years_to_MTL_"+str(int(MTL_cutoff))+".npy"),years_0)
             #Let's add updated array to dictionary
 #            Elevations_dum[year]=elevation_new_dum
-            #Let's export matrix
+            #Let's export matrix of elevations
             np.save(os.path.join(dir_dum, sensitivity+"_"+str(scenario)+"_"+str(year)+".npy"),elevations_1)
 
+            # Let's export cumulative accretion
+            np.save(os.path.join(dir_dum, sensitivity + "_" + str(scenario) + "_" + str(year) + "cum_ac_cm.npy"), cum_ac)
 
             #Let's do carbon now
             carbon_dum=np.zeros((nrows, ncols))
